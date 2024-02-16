@@ -1,6 +1,8 @@
 use std::fs;
 use std::io::{BufRead, BufReader};
 
+use aho_corasick::AhoCorasick;
+
 fn solve_part_one() -> u32 {
     let filepath = "./inputs/day01.txt";
     let file = fs::File::open(filepath).unwrap();
@@ -19,7 +21,7 @@ fn solve_part_one() -> u32 {
     }
     res
 }
-// one two three four five six seven eight nine
+
 fn solve_part_two() -> u32 {
     let filepath = "./inputs/day01.txt";
     let file = fs::File::open(filepath).unwrap();
@@ -29,29 +31,40 @@ fn solve_part_two() -> u32 {
         "eight", "8", "nine", "9",
     ];
     let mut res = 0;
+    let ac = AhoCorasick::new(nums).unwrap();
+
     for line in reader.lines().filter_map(|result| result.ok()) {
-        let mut first = None;
-        let mut last = None;
-        let line = line.as_str();
-        'outer: for i in 0..line.len() {
-            for (index, num) in nums.iter().enumerate() {
-                if i + num.len() > line.len() {
-                    continue;
-                }
-                if &line[i..i + num.len()] == *num {
-                    if first == None {
-                        first = Some(1 + index / 2);
-                    }
-                    last = Some(1 + index / 2);
-                }
-            }
-        }
-        let a = first.unwrap() as u32;
-        let b = last.unwrap() as u32;
-        // println!("{line} -> {first:?}   {last:?}");
-        res += a * 10 + b;
+        let mut matches = ac.find_iter(&line).collect::<Vec<_>>();
+        let first = matches.iter().nth(0).unwrap().pattern().as_u32();
+        let last = matches.iter().last().unwrap().pattern().as_u32();
+        res += (1 + first / 2) * 10 + last / 2 + 1;
     }
     res
+
+    // let mut res = 0;
+    // for line in reader.lines().filter_map(|result| result.ok()) {
+    //     let mut first = None;
+    //     let mut last = None;
+    //     let line = line.as_str();
+    //     'outer: for i in 0..line.len() {
+    //         for (index, num) in nums.iter().enumerate() {
+    //             if i + num.len() > line.len() {
+    //                 continue;
+    //             }
+    //             if &line[i..i + num.len()] == *num {
+    //                 if first == None {
+    //                     first = Some(1 + index / 2);
+    //                 }
+    //                 last = Some(1 + index / 2);
+    //             }
+    //         }
+    //     }
+    //     let a = first.unwrap() as u32;
+    //     let b = last.unwrap() as u32;
+    //     // println!("{line} -> {first:?}   {last:?}");
+    //     res += a * 10 + b;
+    // }
+    // res
 }
 
 #[test]
