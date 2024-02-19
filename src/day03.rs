@@ -1,3 +1,4 @@
+use std::hash::Hash;
 use std::io::BufRead;
 
 // fn part_one() -> u32 {
@@ -102,13 +103,18 @@ impl ParNumber {
     }
 }
 fn part_one() -> i64 {
-    let filepath = "./inputs/day03_part1.txt";
+    let filepath = "./inputs/day03_part2.txt";
     let file = std::fs::File::open(filepath).unwrap();
     let reader = std::io::BufReader::new(file);
     let lines = reader.lines().map(|result| result.unwrap());
     let mut nums = vec![];
     // 所有符号的位置
     let mut syms = HashSet::new();
+
+    // part_two needed
+    let mut gears = HashSet::new();
+    // end
+
     // 当前正在解析的数字序列
     let mut cur_number: Option<ParNumber> = None;
     for (row, line) in lines.enumerate() {
@@ -127,25 +133,45 @@ fn part_one() -> i64 {
                 if ch != '.' {
                     // 记录符号的位置
                     syms.insert((row as i64, col as i64));
+
+                    // part_two add
+                    if ch == '*' {
+                        gears.insert((row as i64, col as i64));
+                    }
+                    // end
                 }
             }
         }
     }
 
-    let total = nums
-        .iter()
-        .filter(|num| num.points.intersection(&syms).next().is_some())
-        .map(|num| num.value)
-        .sum();
+    // part_one add
+    // let total = nums
+    //     .iter()
+    //     .filter(|num| num.points.intersection(&syms).next().is_some())
+    //     .map(|num| num.value)
+    //     .sum();
+    // end
 
-    // for num in &nums {
-    //     // 当前数字的邻居点集合 和 所有符号的邻居点集合 求交集
-    //     if num.points.intersection(&syms).next().is_some() {
-    //         total += num.value;
-    //     }
-    // }
+    // part_two add
+    let mut total = 0;
+    'next_gear: for gear in &gears {
+        let mut matches = vec![];
+        // 找相邻 2 个数
+        for num in &nums {
+            if num.points.contains(gear) {
+                if matches.len() == 2 {
+                    // 即将超过 2 个 舍去
+                    continue 'next_gear;
+                }
+                matches.push(num.value);
+            }
+        }
+        if matches.len() == 2 {
+            total += matches[0] * matches[1];
+        }
+    }
+    // end
 
-    // println!("{:?}\n-----\n{:?}", nums, syms);s
     total
 }
 
