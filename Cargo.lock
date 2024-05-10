@@ -5,9 +5,6 @@ version = 3
 [[package]]
 name = "advent-of-code"
 version = "0.1.0"
-dependencies = [
- "aho-corasick",
-]
 
 [[package]]
 name = "aho-corasick"
@@ -16,6 +13,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b2969dcb958b36655471fc61f7e416fa76033bdd4bfed0678d8fee1e2d07a1f0"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "aoc-2020"
+version = "0.1.0"
+
+[[package]]
+name = "aoc-2023"
+version = "0.1.0"
+dependencies = [
+ "aho-corasick",
 ]
 
 [[package]]
